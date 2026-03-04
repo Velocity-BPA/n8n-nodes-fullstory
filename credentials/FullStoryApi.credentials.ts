@@ -1,13 +1,4 @@
-/*
- * Copyright (c) Velocity BPA, LLC
- * Licensed under the Business Source License 1.1
- * Commercial use requires a separate commercial license.
- * See LICENSE file for details.
- */
-
-import type {
-	IAuthenticateGeneric,
-	ICredentialTestRequest,
+import {
 	ICredentialType,
 	INodeProperties,
 } from 'n8n-workflow';
@@ -26,42 +17,15 @@ export class FullStoryApi implements ICredentialType {
 			},
 			default: '',
 			required: true,
-			description: 'FullStory API Key. Create one in Settings > Integrations > API Keys.',
+			description: 'The API key for your FullStory account',
 		},
 		{
-			displayName: 'Data Center',
-			name: 'dataCenter',
-			type: 'options',
-			options: [
-				{
-					name: 'United States (NA1)',
-					value: 'na1',
-				},
-				{
-					name: 'Europe (EU1)',
-					value: 'eu1',
-				},
-			],
-			default: 'na1',
+			displayName: 'API Base URL',
+			name: 'baseUrl',
+			type: 'string',
+			default: 'https://api.fullstory.com/v2',
 			required: true,
-			description: 'The data center region for your FullStory account',
+			description: 'The base URL for the FullStory API',
 		},
 	];
-
-	authenticate: IAuthenticateGeneric = {
-		type: 'generic',
-		properties: {
-			headers: {
-				Authorization: '=Basic {{$credentials.apiKey}}',
-			},
-		},
-	};
-
-	test: ICredentialTestRequest = {
-		request: {
-			baseURL: '=https://api.fullstory.com',
-			url: '/segments/v1',
-			method: 'GET',
-		},
-	};
 }
