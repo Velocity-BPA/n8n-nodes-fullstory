@@ -65,8 +65,8 @@ export class FullStory implements INodeType {
             value: 'segments',
           },
           {
-            name: 'unknown',
-            value: 'unknown',
+            name: 'Exports',
+            value: 'exports',
           }
         ],
         default: 'users',
@@ -189,6 +189,12 @@ export class FullStory implements INodeType {
       description: 'Search sessions with filters',
       action: 'Search sessions',
     },
+    {
+      name: 'Get Session Events',
+      value: 'getSessionEvents',
+      description: 'Get all events for a specific session',
+      action: 'Get session events',
+    },
   ],
   default: 'getSessions',
 },
@@ -241,6 +247,44 @@ export class FullStory implements INodeType {
     },
   ],
   default: 'getSegments',
+},
+{
+  displayName: 'Operation',
+  name: 'operation',
+  type: 'options',
+  noDataExpression: true,
+  displayOptions: {
+    show: {
+      resource: ['exports'],
+    },
+  },
+  options: [
+    {
+      name: 'Create User Export',
+      value: 'createUserExport',
+      description: 'Create a user data export job',
+      action: 'Create user export',
+    },
+    {
+      name: 'Create Event Export',
+      value: 'createEventExport',
+      description: 'Create an event data export job',
+      action: 'Create event export',
+    },
+    {
+      name: 'Get Export',
+      value: 'getExport',
+      description: 'Get export job status and results',
+      action: 'Get export',
+    },
+    {
+      name: 'List Exports',
+      value: 'listExports',
+      description: 'List all export jobs',
+      action: 'List exports',
+    },
+  ],
+  default: 'createUserExport',
 },
       // Parameter definitions
 {
@@ -453,6 +497,20 @@ export class FullStory implements INodeType {
   description: 'Filter events by user ID',
 },
 {
+  displayName: 'Session URL',
+  name: 'session_url',
+  type: 'string',
+  required: true,
+  displayOptions: {
+    show: {
+      resource: ['events'],
+      operation: ['createEvent'],
+    },
+  },
+  default: '',
+  description: 'The URL of the session where the event occurred',
+},
+{
   displayName: 'Event ID',
   name: 'eventId',
   type: 'string',
@@ -483,8 +541,8 @@ export class FullStory implements INodeType {
 {
   displayName: 'Properties',
   name: 'properties',
-  type: 'collection',
-  placeholder: 'Add Property',
+  type: 'fixedCollection',
+  typeOptions: { multipleValues: true },
   displayOptions: {
     show: {
       resource: ['events'],
@@ -494,8 +552,8 @@ export class FullStory implements INodeType {
   default: {},
   options: [
     {
-      displayName: 'Property',
       name: 'property',
+      displayName: 'Property',
       values: [
         {
           displayName: 'Key',
@@ -514,7 +572,7 @@ export class FullStory implements INodeType {
       ],
     },
   ],
-  description: 'Custom properties for the event',
+  description: 'Additional properties for the event',
 },
 {
   displayName: 'Timestamp',
@@ -659,7 +717,7 @@ export class FullStory implements INodeType {
   displayOptions: {
     show: {
       resource: ['sessions'],
-      operation: ['getSession', 'getSessionReplay'],
+      operation: ['getSession', 'getSessionReplay', 'getSessionEvents'],
     },
   },
   default: '',
@@ -711,7 +769,7 @@ export class FullStory implements INodeType {
   displayOptions: {
     show: {
       resource: ['sessions'],
-      operation: ['searchSessions'],
+      operation: ['searchSessions', 'getSessionEvents'],
     },
   },
   default: 50,
@@ -847,6 +905,139 @@ export class FullStory implements INodeType {
   default: '',
   description: 'Cursor for pagination',
 },
+{
+  displayName: 'Criteria',
+  name: 'criteria',
+  type: 'json',
+  displayOptions: {
+    show: {
+      resource: ['exports'],
+      operation: ['createUserExport'],
+    },
+  },
+  default: '{}',
+  description: 'Criteria for filtering users to export',
+  required: true,
+},
+{
+  displayName: 'Format',
+  name: 'format',
+  type: 'options',
+  displayOptions: {
+    show: {
+      resource: ['exports'],
+      operation: ['createUserExport', 'createEventExport'],
+    },
+  },
+  options: [
+    { name: 'CSV', value: 'csv' },
+    { name: 'JSON', value: 'json' }
+  ],
+  default: 'json',
+  description: 'Export format',
+},
+{
+  displayName: 'Fields',
+  name: 'fields',
+  type: 'string',
+  displayOptions: {
+    show: {
+      resource: ['exports'],
+      operation: ['createUserExport'],
+    },
+  },
+  default: '',
+  description: 'Comma-separated list of fields to include in export',
+},
+{
+  displayName: 'Criteria',
+  name: 'criteria',
+  type: 'json',
+  displayOptions: {
+    show: {
+      resource: ['exports'],
+      operation: ['createEventExport'],
+    },
+  },
+  default: '{}',
+  description: 'Criteria for filtering events to export',
+  required: true,
+},
+{
+  displayName: 'Start Time',
+  name: 'startTime',
+  type: 'dateTime',
+  displayOptions: {
+    show: {
+      resource: ['exports'],
+      operation: ['createEventExport'],
+    },
+  },
+  default: '',
+  description: 'Start time for event export range',
+  required: true,
+},
+{
+  displayName: 'End Time',
+  name: 'endTime',
+  type: 'dateTime',
+  displayOptions: {
+    show: {
+      resource: ['exports'],
+      operation: ['createEventExport'],
+    },
+  },
+  default: '',
+  description: 'End time for event export range',
+  required: true,
+},
+{
+  displayName: 'Export ID',
+  name: 'exportId',
+  type: 'string',
+  displayOptions: {
+    show: {
+      resource: ['exports'],
+      operation: ['getExport'],
+    },
+  },
+  default: '',
+  description: 'ID of the export job',
+  required: true,
+},
+{
+  displayName: 'Limit',
+  name: 'limit',
+  type: 'number',
+  displayOptions: {
+    show: {
+      resource: ['exports'],
+      operation: ['listExports'],
+    },
+  },
+  default: 50,
+  description: 'Maximum number of exports to return',
+},
+{
+  displayName: 'Status',
+  name: 'status',
+  type: 'options',
+  displayOptions: {
+    show: {
+      resource: ['exports'],
+      operation: ['listExports'],
+    },
+  },
+  options: [
+    { name: 'All', value: '' },
+    { name: 'Pending', value: 'pending' },
+    { name: 'Processing', value: 'processing' },
+    { name: 'Completed', value: 'completed' },
+    { name: 'Failed', value: 'failed' }
+  ],
+  default: '',
+  description: 'Filter exports by status',
+},
     ],
   };
 
@@ -863,8 +1054,8 @@ export class FullStory implements INodeType {
         return [await executeSessionsOperations.call(this, items)];
       case 'segments':
         return [await executeSegmentsOperations.call(this, items)];
-      case 'unknown':
-        return [await executeunknownOperations.call(this, items)];
+      case 'exports':
+        return [await executeExportsOperations.call(this, items)];
       default:
         throw new NodeOperationError(this.getNode(), `The resource "${resource}" is not supported`);
     }
@@ -1103,13 +1294,15 @@ async function executeEventsOperations(
         }
 
         case 'createEvent': {
+          const sessionUrl = this.getNodeParameter('session_url', i) as string;
           const eventName = this.getNodeParameter('eventName', i) as string;
           const userId = this.getNodeParameter('userId', i) as string;
           const properties = this.getNodeParameter('properties', i) as any;
           const timestamp = this.getNodeParameter('timestamp', i) as string;
 
           const body: any = {
-            eventName,
+            session_url: sessionUrl,
+            name: eventName,
           };
 
           if (userId) body.userId = userId;
@@ -1305,6 +1498,32 @@ async function executeSessionsOperations(
           const url = queryString 
             ? `https://api.fullstory.com/v2/sessions/search?${queryString}`
             : 'https://api.fullstory.com/v2/sessions/search';
+
+          const options: any = {
+            method: 'GET',
+            url,
+            headers: {
+              'Authorization': `Basic ${authToken}`,
+              'Content-Type': 'application/json',
+            },
+            json: true,
+          };
+
+          result = await this.helpers.httpRequest(options) as any;
+          break;
+        }
+
+        case 'getSessionEvents': {
+          const sessionId = this.getNodeParameter('sessionId', i) as string;
+          const limit = this.getNodeParameter('limit', i, 50) as number;
+
+          const queryParams: any = {};
+          if (limit) queryParams.limit = limit;
+
+          const queryString = new URLSearchParams(queryParams).toString();
+          const url = queryString 
+            ? `https://api.fullstory.com/v2/sessions/${sessionId}/events?${queryString}`
+            : `https://api.fullstory.com/v2/sessions/${sessionId}/events`;
 
           const options: any = {
             method: 'GET',
@@ -1540,21 +1759,134 @@ async function executeSegmentsOperations(
   return returnData;
 }
 
-// PARSE ERROR for unknown — manual fix needed
-// Raw: // No additional imports
+async function executeExportsOperations(
+  this: IExecuteFunctions,
+  items: INodeExecutionData[],
+): Promise<INodeExecutionData[]> {
+  const returnData: INodeExecutionData[] = [];
+  const operation = this.getNodeParameter('operation', 0) as string;
+  const credentials = await this.getCredentials('fullstoryApi') as any;
 
-{
-  displayName: 'Operation',
-  name: 'operation',
-  type: 'options',
-  noDataExpression: true,
-  displayOptions: {
-    show: {
-      resource: ['exports'],
-    },
-  },
-  options: [
-    {
-      name: 'Create Export',
-      value: 'createExport',
-      description: 'Start a 
+  for (let i = 0; i < items.length; i++) {
+    try {
+      let result: any;
+
+      switch (operation) {
+        case 'createUserExport': {
+          const criteria = this.getNodeParameter('criteria', i) as any;
+          const format = this.getNodeParameter('format', i) as string;
+          const fields = this.getNodeParameter('fields', i) as string;
+
+          const body: any = {
+            criteria: typeof criteria === 'string' ? JSON.parse(criteria) : criteria,
+            format,
+          };
+
+          if (fields) {
+            body.fields = fields.split(',').map((field: string) => field.trim());
+          }
+
+          const options: any = {
+            method: 'POST',
+            url: `${credentials.baseUrl}/exports/users`,
+            headers: {
+              'Authorization': `Basic ${credentials.apiKey}`,
+              'Content-Type': 'application/json',
+            },
+            body,
+            json: true,
+          };
+
+          result = await this.helpers.httpRequest(options) as any;
+          break;
+        }
+
+        case 'createEventExport': {
+          const criteria = this.getNodeParameter('criteria', i) as any;
+          const format = this.getNodeParameter('format', i) as string;
+          const startTime = this.getNodeParameter('startTime', i) as string;
+          const endTime = this.getNodeParameter('endTime', i) as string;
+
+          const body: any = {
+            criteria: typeof criteria === 'string' ? JSON.parse(criteria) : criteria,
+            format,
+            start_time: startTime,
+            end_time: endTime,
+          };
+
+          const options: any = {
+            method: 'POST',
+            url: `${credentials.baseUrl}/exports/events`,
+            headers: {
+              'Authorization': `Basic ${credentials.apiKey}`,
+              'Content-Type': 'application/json',
+            },
+            body,
+            json: true,
+          };
+
+          result = await this.helpers.httpRequest(options) as any;
+          break;
+        }
+
+        case 'getExport': {
+          const exportId = this.getNodeParameter('exportId', i) as string;
+
+          const options: any = {
+            method: 'GET',
+            url: `${credentials.baseUrl}/exports/${exportId}`,
+            headers: {
+              'Authorization': `Basic ${credentials.apiKey}`,
+            },
+            json: true,
+          };
+
+          result = await this.helpers.httpRequest(options) as any;
+          break;
+        }
+
+        case 'listExports': {
+          const limit = this.getNodeParameter('limit', i) as number;
+          const status = this.getNodeParameter('status', i) as string;
+
+          const params: any = {};
+          if (limit) params.limit = limit;
+          if (status) params.status = status;
+
+          const options: any = {
+            method: 'GET',
+            url: `${credentials.baseUrl}/exports`,
+            headers: {
+              'Authorization': `Basic ${credentials.apiKey}`,
+            },
+            qs: params,
+            json: true,
+          };
+
+          result = await this.helpers.httpRequest(options) as any;
+          break;
+        }
+
+        default:
+          throw new NodeOperationError(this.getNode(), `Unknown operation: ${operation}`);
+      }
+
+      returnData.push({
+        json: result,
+        pairedItem: { item: i },
+      });
+
+    } catch (error: any) {
+      if (this.continueOnFail()) {
+        returnData.push({
+          json: { error: error.message },
+          pairedItem: { item: i },
+        });
+      } else {
+        throw error;
+      }
+    }
+  }
+
+  return returnData;
+}
