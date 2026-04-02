@@ -8,25 +8,25 @@
 >
 > For licensing information, visit https://velobpa.com/licensing or contact licensing@velobpa.com.
 
-This n8n community node enables seamless integration with FullStory's digital experience analytics platform. With 5 resource implementations (Users, Events, Sessions, Segments, and additional endpoints), you can analyze user behavior, track events, manage user sessions, and extract valuable insights from your digital experiences directly within your n8n workflows.
+A comprehensive n8n community node that provides seamless integration with FullStory's customer experience analytics platform. This node offers 5 resources with complete CRUD operations, enabling you to manage users, events, sessions, segments, and data exports to optimize your customer experience insights and analytics workflows.
 
 ![n8n Community Node](https://img.shields.io/badge/n8n-Community%20Node-blue)
 ![License](https://img.shields.io/badge/license-BSL--1.1-blue)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue)
-![FullStory API](https://img.shields.io/badge/FullStory-API%20Integration-orange)
-![Digital Analytics](https://img.shields.io/badge/Analytics-Digital%20Experience-green)
-![User Behavior](https://img.shields.io/badge/Tracking-User%20Behavior-purple)
+![Customer Analytics](https://img.shields.io/badge/Customer-Analytics-orange)
+![Session Replay](https://img.shields.io/badge/Session-Replay-green)
+![User Experience](https://img.shields.io/badge/User-Experience-purple)
 
 ## Features
 
-- **User Management** - Retrieve and manage user data, profiles, and behavioral analytics
-- **Event Tracking** - Access custom events, page views, and user interactions across your applications
-- **Session Analytics** - Extract detailed session recordings, metadata, and user journey information
-- **Segment Management** - Create, update, and manage user segments for targeted analysis
-- **Comprehensive Search** - Query users, sessions, and events with advanced filtering capabilities
-- **Real-time Data Access** - Retrieve live user behavior data and analytics insights
-- **Automated Reporting** - Generate custom reports and export analytics data for further processing
-- **Workflow Integration** - Seamlessly connect FullStory insights with other tools in your n8n automation workflows
+- **Complete User Management** - Create, update, retrieve, and manage user profiles with custom properties and segments
+- **Event Tracking** - Capture custom events, conversions, and user interactions with detailed metadata
+- **Session Analytics** - Access session recordings, heatmaps, and user journey data for experience optimization
+- **Advanced Segmentation** - Create and manage user segments based on behavior, properties, and custom criteria
+- **Data Export Operations** - Export session data, user events, and analytics for external analysis and reporting
+- **Real-time Monitoring** - Track user behavior and application performance in real-time
+- **Custom Properties** - Set and manage custom user and event properties for detailed analytics
+- **Comprehensive Error Handling** - Robust error management with detailed logging and retry mechanisms
 
 ## Installation
 
@@ -61,112 +61,129 @@ n8n start
 
 | Field | Description | Required |
 |-------|-------------|----------|
-| API Key | Your FullStory API key from the FullStory dashboard | Yes |
+| API Key | Your FullStory API key from Settings → API Keys | Yes |
 | Organization ID | Your FullStory organization identifier | Yes |
-| Environment | FullStory environment (production/staging) | No |
+| Environment | API environment (production/staging) | No |
 
 ## Resources & Operations
 
-### 1. Users
+### 1. User
 
 | Operation | Description |
 |-----------|-------------|
-| Get | Retrieve a specific user by ID or email |
-| List | Get a list of users with optional filtering |
-| Search | Search users by custom criteria and attributes |
-| Get Properties | Retrieve custom user properties and metadata |
-| Update Properties | Update custom user properties |
+| Create | Create a new user profile with properties and segments |
+| Get | Retrieve user details by ID or email |
+| Update | Update user properties, segments, or metadata |
+| Delete | Remove a user profile from FullStory |
+| List | Get all users with filtering and pagination options |
+| Set Properties | Set custom properties for a user |
+| Add to Segment | Add user to specific segments |
 
-### 2. Events
-
-| Operation | Description |
-|-----------|-------------|
-| Get | Retrieve a specific event by ID |
-| List | Get events for a user or session |
-| Search | Search events by type, timestamp, or custom properties |
-| Create | Send custom events to FullStory |
-| Get Types | Retrieve available event types |
-| Get Properties | Get event properties and metadata |
-
-### 3. Sessions
+### 2. Event
 
 | Operation | Description |
 |-----------|-------------|
-| Get | Retrieve detailed session information |
-| List | Get sessions for a specific user or time period |
-| Search | Search sessions by duration, pages visited, or custom criteria |
-| Get Recording | Access session recording URL and metadata |
-| Get Events | Retrieve all events within a specific session |
-| Get Heatmap | Get heatmap data for session pages |
+| Create | Track a custom event with properties and context |
+| Get | Retrieve event details by ID |
+| List | Get events with filtering by user, time range, or type |
+| Update | Update event properties or metadata |
+| Delete | Remove an event record |
+| Track Conversion | Track conversion events with value and funnel data |
+| Batch Create | Create multiple events in a single request |
 
-### 4. Segments
-
-| Operation | Description |
-|-----------|-------------|
-| Get | Retrieve segment details and criteria |
-| List | Get all available segments |
-| Create | Create new user segments |
-| Update | Modify existing segment criteria |
-| Delete | Remove segments |
-| Get Users | Get users belonging to a specific segment |
-
-### 5. Analytics
+### 3. Session
 
 | Operation | Description |
 |-----------|-------------|
-| Get Metrics | Retrieve key performance metrics |
-| Get Funnel | Access funnel analysis data |
-| Get Heatmaps | Retrieve page heatmap information |
-| Export Data | Export analytics data in various formats |
-| Get Reports | Access pre-built analytics reports |
+| Get | Retrieve session details including recordings and metadata |
+| List | Get sessions with filtering by user, date, or properties |
+| Get Recording | Access session recording URL and playback data |
+| Get Heatmap | Retrieve heatmap data for session analysis |
+| Search | Search sessions by custom criteria and events |
+| Export | Export session data for external analysis |
+
+### 4. Segment
+
+| Operation | Description |
+|-----------|-------------|
+| Create | Create a new user segment with rules and criteria |
+| Get | Retrieve segment details and user count |
+| Update | Update segment rules, name, or description |
+| Delete | Remove a segment |
+| List | Get all segments with metadata |
+| Get Users | Retrieve users belonging to a segment |
+| Evaluate | Test if a user matches segment criteria |
+
+### 5. Export
+
+| Operation | Description |
+|-----------|-------------|
+| Create | Create a new data export job |
+| Get Status | Check the status of an export job |
+| Download | Download completed export data |
+| List | Get all export jobs with status and metadata |
+| Cancel | Cancel a running export job |
+| Schedule | Schedule recurring data exports |
 
 ## Usage Examples
 
 ```javascript
-// Get user session data for behavior analysis
+// Track user conversion event
 {
-  "operation": "search",
-  "resource": "sessions",
-  "userId": "user_12345",
-  "startDate": "2024-01-01",
-  "endDate": "2024-01-31",
-  "includeEvents": true
+  "event_name": "purchase_completed",
+  "user_id": "user_12345",
+  "properties": {
+    "order_value": 129.99,
+    "product_category": "electronics",
+    "payment_method": "credit_card"
+  },
+  "timestamp": "2024-01-15T10:30:00Z"
 }
 ```
 
 ```javascript
-// Create a custom event for tracking
+// Create user segment for high-value customers
 {
-  "operation": "create",
-  "resource": "events",
-  "eventName": "feature_usage",
-  "userId": "user_12345",
-  "properties": {
-    "feature": "advanced_search",
-    "timestamp": "2024-01-15T10:30:00Z"
+  "name": "High Value Customers",
+  "description": "Users with purchase value > $500",
+  "rules": {
+    "conditions": [
+      {
+        "property": "total_purchase_value",
+        "operator": "greater_than",
+        "value": 500
+      }
+    ]
   }
 }
 ```
 
 ```javascript
-// Search for users in a specific segment
+// Export session data for analysis
 {
-  "operation": "getUsers",
-  "resource": "segments",
-  "segmentId": "segment_abc123",
-  "limit": 100,
-  "includeProperties": true
+  "export_type": "sessions",
+  "date_range": {
+    "start": "2024-01-01T00:00:00Z",
+    "end": "2024-01-31T23:59:59Z"
+  },
+  "filters": {
+    "user_segment": "high_value_customers",
+    "include_recordings": true
+  },
+  "format": "json"
 }
 ```
 
 ```javascript
-// Get comprehensive session recording data
+// Update user properties with custom data
 {
-  "operation": "getRecording",
-  "resource": "sessions",
-  "sessionId": "session_xyz789",
-  "includeHeatmap": true,
-  "includeEvents": true
+  "user_id": "user_12345",
+  "properties": {
+    "subscription_plan": "premium",
+    "account_type": "business",
+    "signup_source": "organic_search",
+    "last_login": "2024-01-15T14:22:00Z"
+  }
 }
 ```
 
@@ -174,12 +191,12 @@ n8n start
 
 | Error | Description | Solution |
 |-------|-------------|----------|
-| 401 Unauthorized | Invalid API key or expired credentials | Verify API key in FullStory dashboard and update credentials |
-| 403 Forbidden | Insufficient permissions for requested operation | Check API key permissions and organization access rights |
-| 404 Not Found | User, session, or resource does not exist | Verify resource IDs and ensure data exists in FullStory |
-| 429 Rate Limited | Too many API requests in short time period | Implement delays between requests or reduce request frequency |
-| 422 Invalid Parameters | Invalid query parameters or request format | Review API documentation and validate all required parameters |
-| 500 Server Error | FullStory service temporarily unavailable | Retry request after delay or check FullStory status page |
+| Invalid API Key | Authentication failed with provided credentials | Verify API key in FullStory dashboard settings |
+| Rate Limit Exceeded | Too many requests sent in time window | Implement exponential backoff and retry logic |
+| User Not Found | Requested user ID does not exist | Verify user ID or create user before operations |
+| Segment Rules Invalid | Segment criteria contain invalid conditions | Review segment rules syntax and property names |
+| Export Job Failed | Data export processing encountered an error | Check export parameters and retry with valid filters |
+| Session Not Available | Requested session is not accessible or expired | Verify session ID and data retention policies |
 
 ## Development
 
@@ -224,5 +241,5 @@ Contributions are welcome! Please ensure:
 ## Support
 
 - **Issues**: [GitHub Issues](https://github.com/Velocity-BPA/n8n-nodes-fullstory/issues)
-- **FullStory API Documentation**: [FullStory Developer Hub](https://developer.fullstory.com/)
-- **FullStory Community**: [FullStory Help Center](https://help.fullstory.com/)
+- **FullStory API Documentation**: [https://developer.fullstory.com](https://developer.fullstory.com)
+- **FullStory Community**: [https://help.fullstory.com](https://help.fullstory.com)
